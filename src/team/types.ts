@@ -1029,7 +1029,7 @@ export interface CreateTeamParams {
 /**
  * 默认配置常量
  */
-export const DEFAULTS = {
+export const DEFAULTS = Object.freeze({
   /** 默认心跳间隔：30秒 */
   HEARTBEAT_INTERVAL_MS: 30000,
   /** 默认心跳超时：2分钟 */
@@ -1052,7 +1052,7 @@ export const DEFAULTS = {
   APPROVAL_TIMEOUT_MS: 300000,
   /** 数据版本 */
   STORAGE_VERSION: '1.0.0',
-} as const;
+} as const);
 
 /**
  * 操作结果接口
