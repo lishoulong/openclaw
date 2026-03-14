@@ -1,58 +1,123 @@
-# Example Team Configuration
-# 示例团队配置文件
+# OpenClaw 多 Agent 调度方案 - 团队配置示例
+# 配置文件路径: ~/.openclaw/teams/my-team.yaml
 
-teamId: example-team
-name: Example Development Team
-task: Implement a user authentication feature
-description: A team focused on backend authentication development
+team:
+  # 团队唯一标识
+  id: example-dev-team
 
-coordinationMode: hub-and-spoke
+  # 团队任务描述
+  task: 开发新的支付模块，实现安全可靠的在线支付功能
 
-lead:
-  agentId: lead-agent
-  role: lead
-  model: gpt-4
-  systemPrompt: You are the team lead responsible for coordinating the team and making architectural decisions.
-  requiresApproval: true
+  # 协调模式: hub-and-spoke (推荐) 或 mesh
+  coordinationMode: hub-and-spoke
 
-members:
-  - agentId: planner
-    role: planning
-    model: gpt-4
-    systemPrompt: You are a planning specialist. Create detailed implementation plans.
-    
-  - agentId: coder
-    role: coding
-    model: gpt-4
-    systemPrompt: You are a coding specialist. Implement features following best practices.
-    
-  - agentId: reviewer
-    role: review
-    model: gpt-4
-    systemPrompt: You are a code reviewer. Ensure code quality and adherence to standards.
+  # 计划审批配置
+  planApproval:
+    enabled: true
+    autoApprove: false
+    rules:
+      - 必须包含单元测试
+      - 代码覆盖率不低于 80%
+      - 需要通过安全审计
 
-sharedWorkspace: ~/.openclaw/workspace/teams/example-team
+  # 团队负责人配置
+  lead:
+    # 使用的 AI 模型
+    model: gpt-4o
+    # 系统提示词
+    systemPrompt: |
+      你是团队负责人，负责：
+      1. 分析需求并制定开发计划
+      2. 协调团队成员
+      3. 审核代码质量
+      4. 汇总最终成果
+    # 是否需要审批
+    requiresApproval: true
 
-planApproval:
-  enabled: true
-  stages:
-    - goal
-    - plan
-    - result
-  timeout: 3600
+  # 团队成员配置
+  members:
+    - id: planner
+      role: planning
+      model: claude-3-5-sonnet
+      task: 分析现有系统，制定支付模块架构设计
+      capabilities:
+        - architecture_design
+        - api_design
+        - documentation
 
-recovery:
-  enabled: true
-  maxRetries: 3
-  backoffMultiplier: 2
+    - id: coder-frontend
+      role: coding
+      model: claude-3-5-sonnet
+      task: 开发前端支付界面和交互逻辑
+      capabilities:
+        - frontend_development
+        - ui_implementation
+        - state_management
 
-heartbeat:
-  intervalMs: 30000
-  timeoutMs: 60000
-  maxRetries: 3
-  backoffMultiplier: 2
+    - id: coder-backend
+      role: coding
+      model: gpt-4o
+      task: 开发后端支付 API 和业务逻辑
+      capabilities:
+        - backend_development
+        - api_implementation
+        - database_design
 
-metadata:
-  priority: high
-  project: authentication-system
-  createdBy: developer
+    - id: reviewer
+      role: review
+      model: claude-3-5-sonnet
+      task: 代码审查，确保安全性和质量
+      requiresApproval: true
+      capabilities:
+        - code_review
+        - security_audit
+        - performance_optimization
+
+    - id: tester
+      role: testing
+      model: gpt-4o-mini
+      task: 编写测试用例，执行功能测试
+      capabilities:
+        - test_writing
+        - test_execution
+        - bug_reporting
+
+  # 共享工作区路径
+  sharedWorkspace: ~/.openclaw/workspace/teams/example-dev-team
+
+  # 恢复和容错配置
+  recovery:
+    # 心跳间隔 (毫秒)
+    heartbeatInterval: 30000
+    # 超时时间 (毫秒)
+    timeoutMs: 120000
+    # 最大重试次数
+    maxRetries: 3
+    # 退避倍数
+    backoffMultiplier: 2
+    # 是否自动恢复
+    autoRecover: true
+    # 恢复策略: retry | recreate | reassign | skip
+    strategy: retry
+
+  # 通知配置
+  notifications:
+    # 任务完成时通知
+    onTaskCompleted: true
+    # 需要审批时通知
+    onApprovalRequired: true
+    # Agent 故障时通知
+    onAgentFailure: true
+    # 团队同步时通知
+    onTeamSync: true
+
+  # 高级配置
+  advanced:
+    # 任务分配策略: round-robin | least-loaded | role-based | manual
+    assignmentStrategy: role-based
+    # 最大并行任务数
+    maxConcurrentTasks: 5
+    # 任务超时时间 (秒)
+    taskTimeoutSeconds: 3600
+    # 是否启用详细日志
+    verboseLogging: true
