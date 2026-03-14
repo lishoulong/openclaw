@@ -1,0 +1,58 @@
+# Example Team Configuration
+# 示例团队配置文件
+
+teamId: example-team
+name: Example Development Team
+task: Implement a user authentication feature
+description: A team focused on backend authentication development
+
+coordinationMode: hub-and-spoke
+
+lead:
+  agentId: lead-agent
+  role: lead
+  model: gpt-4
+  systemPrompt: You are the team lead responsible for coordinating the team and making architectural decisions.
+  requiresApproval: true
+
+members:
+  - agentId: planner
+    role: planning
+    model: gpt-4
+    systemPrompt: You are a planning specialist. Create detailed implementation plans.
+    
+  - agentId: coder
+    role: coding
+    model: gpt-4
+    systemPrompt: You are a coding specialist. Implement features following best practices.
+    
+  - agentId: reviewer
+    role: review
+    model: gpt-4
+    systemPrompt: You are a code reviewer. Ensure code quality and adherence to standards.
+
+sharedWorkspace: ~/.openclaw/workspace/teams/example-team
+
+planApproval:
+  enabled: true
+  stages:
+    - goal
+    - plan
+    - result
+  timeout: 3600
+
+recovery:
+  enabled: true
+  maxRetries: 3
+  backoffMultiplier: 2
+
+heartbeat:
+  intervalMs: 30000
+  timeoutMs: 60000
+  maxRetries: 3
+  backoffMultiplier: 2
+
+metadata:
+  priority: high
+  project: authentication-system
+  createdBy: developer
